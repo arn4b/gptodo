@@ -1,14 +1,4 @@
-// const supabase = require('./supabase');
-
-/* eslint-disable import/no-extraneous-dependencies */
-const { createClient } = require('@supabase/supabase-js');
-
-require('dotenv').config();
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-
-const supabase = createClient(supabaseUrl, supabaseKey);
+const { supabase } = require('./supabase');
 
 // User Signup API
 async function signUp(email, password) {

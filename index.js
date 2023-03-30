@@ -1,15 +1,18 @@
 /* eslint-disable consistent-return */
 /* eslint-disable linebreak-style */
 const express = require('express');
+const { v4: uuidv4 } = require('uuid');
 
 const {
     createTodo, getTodoById, updateTodo, deleteTodoById,
 } = require('./todos');
 const { signUp, signIn } = require('./auth');
+const { requestLogger } = require('./winston_logger');
 
 const app = express();
 
 app.use(express.json());
+app.use(requestLogger);
 
 // TODO ROUTES
 app.post('/todos', async (req, res, next) => {
@@ -20,10 +23,13 @@ app.post('/todos', async (req, res, next) => {
     }
 
     const {
-        id, userId, description, isCompleted,
+        description, isCompleted,
     } = req.body;
 
-    if (!id || !userId || !description || !isCompleted) {
+    const id = uuidv4();
+    const userId = uuidv4();
+
+    if (!description) {
         const error = new Error('Missing required fields');
         error.status = 400;
         return next(error);
@@ -51,8 +57,9 @@ app.get('/todos/:id', async (req, res) => {
 
 app.put('/todos/:id', async (req, res) => {
     const todoId = req.params.id;
-    const { description, isCompleted } = req.body;
-    const updatedTodo = await updateTodo(todoId, description, isCompleted);
+    const updatedAt = new Date().toISOString();
+    const { title, description, isCompleted } = req.body;
+    const updatedTodo = await updateTodo(todoId, title, description, isCompleted, updatedAt);
 
     if (updatedTodo) {
         res.status(200).json({ message: 'Todos Updated!' });
