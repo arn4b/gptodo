@@ -1,5 +1,12 @@
 const winston = require('winston');
 
+const LokiTransport = require('winston-loki');
+
+const lokiTransport = new LokiTransport({
+    host: 'localhost:3100',
+    port: 3100, // the default Loki port
+});
+
 const logger = winston.createLogger({
     level: 'info',
     format: winston.format.json(),
@@ -7,6 +14,7 @@ const logger = winston.createLogger({
     transports: [
         new winston.transports.File({ filename: 'error.log', level: 'error' }),
         new winston.transports.File({ filename: 'combined.log' }),
+        lokiTransport,
     ],
 });
 
